@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>Moon Phase Today</title>
+<style>
+:root{--ink:#0e1424;--slate:#1b2540;--line:#2c3862;--moon:#f3eed9;--dust:#9aa2bd;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 20% 0%,#18213d,var(--ink) 60%);color:var(--moon);min-height:100vh;
+font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;line-height:1.6;padding:clamp(20px,5vw,64px)}
+main{max-width:920px;margin:0 auto;display:grid;grid-template-columns:minmax(220px,340px) 1fr;gap:clamp(24px,5vw,64px);align-items:center}
+#moon{width:100%;height:auto;filter:drop-shadow(0 0 40px rgba(243,238,217,.18))}
+#moon.south{transform:scaleX(-1)}
+h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:400;line-height:1.1;margin:0 0 .3em;letter-spacing:-.01em}
+.sub{color:var(--dust);margin:0 0 1.5rem;font-size:1.05rem}
+dl{display:grid;grid-template-columns:auto 1fr;gap:.4rem 1.5rem;margin:0 0 2rem;max-width:30rem}
+dt{color:var(--dust)}dd{margin:0}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+button,input[type=date]{font:inherit;color:var(--moon);background:var(--slate);border:1px solid var(--line);border-radius:6px;padding:.5rem .9rem}
+button{cursor:pointer}button:hover{background:var(--line)}
+:focus-visible{outline:2px solid var(--moon);outline-offset:2px}
+label.hemi{display:flex;gap:.5rem;align-items:center;color:var(--dust);margin-top:1.2rem;font-size:.95rem}
+#err{color:#f0a3a3;min-height:1.5em;margin:.5rem 0 0}
+footer{max-width:920px;margin:3rem auto 0;color:var(--dust);font-size:.9rem}
+@media(max-width:640px){main{grid-template-columns:1fr}#moon{max-width:260px}}
+</style>
+</head>
+<body>
+<main>
+  <svg id="moon" viewBox="-110 -110 220 220" role="img" aria-label="Moon phase illustration">
+    <defs><radialGradient id="lit" cx="40%" cy="35%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#d6cfb3"/></radialGradient></defs>
+    <circle r="100" fill="#19213d"/>
+    <path id="litpath" fill="url(#lit)"/>
+    <circle r="100" fill="none" stroke="#2c3862" stroke-width="1"/>
+  </svg>
+  <section>
+    <h1 id="name">Loading…</h1>
+    <p class="sub" id="when"></p>
+    <dl>
+      <dt>Illuminated</dt><dd id="illum"></dd>
+      <dt>Moon age</dt><dd id="age"></dd>
+      <dt>Next full moon</dt><dd id="nfull"></dd>
+      <dt>Next new moon</dt><dd id="nnew"></dd>
+    </dl>
+    <div class="controls">
+      <button id="prev" type="button" aria-label="Previous day">&larr; Day</button>
+      <input id="date" type="date" min="1900-01-01" max="2100-12-31" aria-label="Choose a date">
+      <button id="next" type="button" aria-label="Next day">Day &rarr;</button>
+      <button id="today" type="button">Today</button>
+    </div>
+    <p id="err" role="alert"></p>
+    <label class="hemi"><input id="south" type="checkbox"> View from the Southern Hemisphere</label>
+  </section>
+</main>
+<footer>Phases are calculated from the average length of a lunar cycle, so times can be off by several hours. Pick any date between 1900 and 2100.</footer>
+<script>
+(function(){
+"use strict";
+var SYN=29.530588853, DAY=86400000, REF=Date.UTC(2000,0,6,18,14);
+var $=function(id){return document.getElementById(id)};
+var current=new Date();
+
+function age(t){var a=((t-REF)/DAY)%SYN;return a<0?a+SYN:a}
+function nameFor(a){
+  if(a<1.84566||a>=27.68493)return"New Moon";
+  if(a<5.53699)return"Waxing Crescent";
+  if(a<9.22831)return"First Quarter";
+  if(a<12.91963)return"Waxing Gibbous";
+  if(a<16.61096)return"Full Moon";
+  if(a<20.30228)return"Waning Gibbous";
+  if(a<23.99361)return"Last Quarter";
+  return"Waning Crescent";
+}
+function draw(a){
+  var r=100,f=a/SYN,k=Math.cos(2*Math.PI*f),rx=(Math.abs(k)*r).toFixed(2),d;
+  if(f<0.5){d="M0,-100 A100,100 0 0 1 0,100 A"+rx+",100 0 0 "+(k>0?0:1)+" 0,-100 Z"}
+  else{d="M0,-100 A100,100 0 0 0 0,100 A"+rx+",100 0 0 "+(k>0?1:0)+" 0,-100 Z"}
+  $("litpath").setAttribute("d",d);
+}
+function fmt(ms){return new Date(ms).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
+function toInput(d){
+  var m=("0"+(d.getMonth()+1)).slice(-2),day=("0"+d.getDate()).slice(-2);
+  return d.getFullYear()+"-"+m+"-"+day;
+}
+function render(d){
+  var t=d.getTime(),a=age(t),ill=(1-Math.cos(2*Math.PI*a/SYN))/2;
+  var nf=t+((SYN/2-a+SYN)%SYN)*DAY, nn=t+(SYN-a)*DAY;
+  draw(a);
+  $("name").textContent=nameFor(a);
+  $("when").textContent=fmt(t);
+  $("illum").textContent=Math.round(ill*100)+"%";
+  $("age").textContent=a.toFixed(1)+" days into a "+SYN.toFixed(1)+"-day cycle";
+  $("nfull").textContent=fmt(nf);
+  $("nnew").textContent=fmt(nn);
+  $("date").value=toInput(d);
+  $("moon").setAttribute("aria-label","Moon phase: "+nameFor(a)+", "+Math.round(ill*100)+"% illuminated");
+  $("err").textContent="";
+}
+function shift(n){var d=new Date(current.getFullYear(),current.getMonth(),current.getDate()+n,12);setDate(d)}
+function setDate(d){
+  if(isNaN(d.getTime())||d.getFullYear()<1900||d.getFullYear()>2100){
+    $("err").textContent="Choose a date between 1900 and 2100.";return;
+  }
+  current=d;render(d);
+}
+$("prev").addEventListener("click",function(){shift(-1)});
+$("next").addEventListener("click",function(){shift(1)});
+$("today").addEventListener("click",function(){setDate(new Date())});
+$("date").addEventListener("change",function(){
+  var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(this.value);
+  if(!m){$("err").textContent="Enter a valid date.";return}
+  setDate(new Date(+m[1],+m[2]-1,+m[3],12));
+});
+$("south").addEventListener("change",function(){$("moon").classList.toggle("south",this.checked)});
+render(current);
+})();
+</script>
+</body>
+</html>
