@@ -1,37 +1,71 @@
+/* :root is the top-level page element. The -- names are CSS custom properties, reusable values for the site colors. color-scheme tells the browser this design is dark. */
 :root{--ink:#0e1424;--slate:#1b2540;--line:#2c3862;--moon:#f3eed9;--dust:#9aa2bd;color-scheme:dark}
+/* The universal selector (*) applies this sizing rule to every element, making padding count inside an element’s set width. */
 *{box-sizing:border-box}
+/* Remove default outer spacing from the document and visible page. */
 html,body{margin:0}
 body{background:radial-gradient(ellipse at 20% 0%,#18213d,var(--ink) 60%);color:var(--moon);min-height:100vh;
 font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;line-height:1.6;padding:clamp(20px,5vw,64px)}
+/* Main uses a grid (a row-and-column layout) for the moon and its information; max-width keeps it readable on wide screens. */
 main{max-width:920px;margin:0 auto;display:grid;grid-template-columns:minmax(220px,340px) 1fr;gap:clamp(24px,5vw,64px);align-items:center}
+/* Size the moon illustration to its column and add a soft glow. */
 #moon{width:100%;height:auto;filter:drop-shadow(0 0 40px rgba(243,238,217,.18))}
+/* A class is a label on an HTML element that CSS and JavaScript can use to select or change it; the south class turns the illustration for a Southern Hemisphere view. */
 #moon.south{transform:rotate(180deg)}
+/* Hide the photograph group by default; the next rules switch between photo and drawn art. */
 #moon .real{display:none}
+/* When the photo class is active, show the real moon photograph. */
 #moon.photo .real{display:inline}
+/* Hide the drawn version while the photo is active. */
 #moon.photo .art{display:none}
+/* The main phase name uses responsive text size and a light heading weight. */
 h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:400;line-height:1.1;margin:0 0 .3em;letter-spacing:-.01em}
+/* Supporting date text uses a muted color and spacing. */
 .sub{color:var(--dust);margin:0 0 1.5rem;font-size:1.05rem}
+/* Arrange measurement labels and values in two grid columns. */
 dl{display:grid;grid-template-columns:auto 1fr;gap:.4rem 1.5rem;margin:0 0 2rem;max-width:30rem}
+/* The labels are muted; the paired values keep their normal text color. */
 dt{color:var(--dust)}dd{margin:0}
+/* Keep date controls in a flexible row that wraps when there is not enough room. */
 .controls{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+/* Give buttons, date fields, and menus a shared font, color, background, border, and padding. */
 button,input[type=date],select{font:inherit;color:var(--moon);background:var(--slate);border:1px solid var(--line);border-radius:6px;padding:.5rem .9rem}
+/* Buttons show a hand cursor, and their background changes on hover. */
 button{cursor:pointer}button:hover{background:var(--line)}
+/* A visible outline helps keyboard users see which control is selected. */
 :focus-visible{outline:2px solid var(--moon);outline-offset:2px}
+/* Align preference checkboxes with their labels and separate them from the controls above. */
 label.hemi{display:flex;gap:.5rem;align-items:center;color:var(--dust);margin-top:1.2rem;font-size:.95rem}
+/* The adjacent sibling selector (+) adds a little space before the second checkbox row. */
 .hemi+.hemi{margin-top:.5rem}
+/* Notes use smaller muted text; minimum height reduces layout jumping when text appears. */
 .note{color:var(--dust);font-size:.9rem;margin:.6rem 0 0;min-height:1.4em}
+/* Error text is colored red and reserves space for a message. */
 #err{color:#f0a3a3;min-height:1.5em;margin:.5rem 0 0}
+/* Center the footer and keep it narrower and quieter than the main content. */
 footer{max-width:920px;margin:3rem auto 0;color:var(--dust);font-size:.9rem}
+/* A media query applies these layout changes on screens at most 640 pixels wide. */
 @media(max-width:640px){main{grid-template-columns:1fr}#moon{max-width:260px}}
+/* Separate eclipse information from the main panel with a top border and spacing. */
 .eclipses{max-width:920px;margin:3.5rem auto 0;padding-top:2rem;border-top:1px solid var(--line)}
+/* Style the eclipse section title. */
 .eclipses h2{font-weight:400;font-size:clamp(1.6rem,4vw,2.2rem);margin:0 0 1rem}
+/* Style the heading above the full eclipse list. */
 .eclipses h3{font-weight:400;font-size:1.1rem;color:var(--dust);margin:2rem 0 .6rem}
+/* Display the region prompt on its own line. */
 .rg{display:block;color:var(--dust);margin-bottom:.4rem}
+/* Prevent the region menu from extending beyond the page width. */
 select{max-width:100%}
+/* Cards use a responsive grid that creates as many columns as fit, with a 260px minimum card width. */
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-top:1.2rem}
+/* Each eclipse card has a border, rounded corners, padding, and a faint background. */
 .card{border:1px solid var(--line);border-radius:8px;padding:1rem 1.2rem;background:rgba(27,37,64,.5)}
+/* Eclipse-card labels are muted; dates and details receive their own rules. */
 .card .k{color:var(--dust)}.card .d{font-size:1.5rem;line-height:1.3;margin:.2rem 0}
 .card .t{color:var(--moon)}.card .w{color:var(--dust);margin:.6rem 0 0;font-size:.95rem}
+/* Remove default bullets and spacing from the generated eclipse list. */
 #ecllist{list-style:none;padding:0;margin:0}
+/* Separate list entries with padding and a thin divider. */
 #ecllist li{padding:.5rem 0;border-bottom:1px solid var(--line)}
+/* Add space above the reset button. */
 #reset{margin-top:.8rem}

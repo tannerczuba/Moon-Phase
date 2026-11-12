@@ -1,61 +1,90 @@
 <!DOCTYPE html>
+<!-- The html element contains the whole page; lang tells assistive tools and browsers the page uses English. -->
 <html lang="en">
+<!-- The head holds page information and links to the stylesheet, which controls appearance. -->
 <head>
+<!-- UTF-8 is a character encoding: a standard way to store letters and symbols. -->
 <meta charset="utf-8">
+<!-- This setting makes the layout use the device screen width, especially on phones. -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- This security policy limits which kinds of resources this page may load. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<!-- Do not send the page address as referral information when loading resources. -->
 <meta name="referrer" content="no-referrer">
+<!-- The title appears in the browser tab. -->
 <title>Moon Phase Today</title>
+<!-- A stylesheet is a file of CSS rules that sets colors, spacing, and layout. -->
 <link rel="stylesheet" href="style.css">
 </head>
+<!-- The body contains everything visitors can see and use. -->
 <body>
+<!-- Main groups the moon illustration and the controls and facts for the selected date. -->
 <main>
+<!-- SVG means Scalable Vector Graphics: an image drawn from shapes that can resize cleanly. JavaScript changes these shapes to show the phase. -->
   <svg id="moon" viewBox="-110 -110 220 220" role="img" aria-label="Moon phase illustration">
+<!-- Definitions store reusable drawing effects and shapes used by the moon illustration. -->
     <defs>
       <radialGradient id="lit" cx="40%" cy="35%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#d6cfb3"/></radialGradient>
       <clipPath id="disc"><circle r="100"/></clipPath>
       <filter id="soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="1"/></filter>
     </defs>
+<!-- This circle is the dark base of the moon. -->
     <circle r="100" fill="#19213d"/>
+<!-- JavaScript draws the illuminated part of the moon into this path (a shape outline). -->
     <path id="litpath" class="art" fill="url(#lit)"/>
+<!-- This group holds the optional photograph and the shadow placed over it. -->
     <g class="real" clip-path="url(#disc)">
-      <image id="photo" x="-101" y="-101" width="202" height="202" preserveAspectRatio="xMidYMid slice"/>
+      <image id="photo" x="-116" y="-114" width="232" height="232" preserveAspectRatio="xMidYMid slice"/>
       <path id="shade" fill="#050813" fill-opacity="0.93" fill-rule="evenodd" filter="url(#soft)"/>
     </g>
     <circle r="100" fill="none" stroke="#2c3862" stroke-width="1"/>
   </svg>
+<!-- This section shows the phase name, date, measurements, and user controls. -->
   <section>
     <h1 id="name">Loading…</h1>
     <p class="sub" id="when"></p>
+<!-- A description list pairs each measurement label (dt) with its value (dd). -->
     <dl>
       <dt>Illuminated</dt><dd id="illum"></dd>
       <dt>Moon age</dt><dd id="age"></dd>
       <dt>Next full moon</dt><dd id="nfull"></dd>
       <dt>Next new moon</dt><dd id="nnew"></dd>
     </dl>
+<!-- These controls let visitors move between dates or choose one directly. -->
     <div class="controls">
       <button id="prev" type="button" aria-label="Previous day">&larr; Day</button>
       <input id="date" type="date" min="1900-01-01" max="2100-12-31" aria-label="Choose a date">
       <button id="next" type="button" aria-label="Next day">Day &rarr;</button>
       <button id="today" type="button">Today</button>
     </div>
+<!-- Errors are shown here when a date cannot be used. role=alert helps assistive technology announce them. -->
     <p id="err" role="alert"></p>
+<!-- The first checkbox rotates the illustration for a Southern Hemisphere view. -->
     <label class="hemi"><input id="south" type="checkbox"> View from the Southern Hemisphere</label>
+<!-- The second checkbox switches to the real photo when that image has loaded. -->
     <label class="hemi"><input id="usephoto" type="checkbox" disabled> Show real moon photo</label>
     <p id="photonote" class="note"></p>
+<!-- This button clears saved choices and restores the page defaults. -->
     <button id="reset" type="button">Reset saved settings</button>
   </section>
 </main>
+<!-- This section contains the region picker and upcoming eclipse information. -->
 <section class="eclipses" aria-labelledby="eh">
   <h2 id="eh">Upcoming eclipses</h2>
   <label class="rg" for="region">Where are you?</label>
+<!-- JavaScript fills this menu with regions. -->
   <select id="region"></select>
+<!-- The next solar and lunar eclipse summaries are inserted here. aria-live announces updates. -->
   <div id="eclcards" class="cards" aria-live="polite"></div>
   <h3 id="eclhead2" hidden>All upcoming eclipses you can see from this region</h3>
+<!-- The list of all upcoming visible eclipses is inserted here. -->
   <ul id="ecllist"></ul>
+<!-- A source and safety note explains coverage and safe viewing. -->
   <p class="note" id="eclnote">Compiled from NASA eclipse predictions and summarized by broad region, so details near the edge of a visibility zone may differ. Covers 2027 to 2030. Never look at the Sun without certified eclipse glasses; lunar eclipses are safe to watch.</p>
 </section>
+<!-- The footer explains calculation accuracy, image credit, and how settings are stored. -->
 <footer>Phases are calculated from the average length of a lunar cycle, so times can be off by several hours. Pick any date between 1900 and 2100. Moon photo: NASA/JPL Galileo spacecraft, public domain, via Wikimedia Commons. Your choices are saved only in this browser and never sent anywhere.</footer>
+<!-- JavaScript adds the interactive date, phase, preference, and eclipse behavior. defer waits until HTML is read before running it. -->
 <script src="script.js" defer></script>
 </body>
 </html>
